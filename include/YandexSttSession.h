@@ -77,10 +77,11 @@ public:
 	 * @param HostName - host where to connect with gRPC and stream sound
 	 * @param Bearer - Yandex Iam token
 	 * @param SampleRate - counts of samples per second
+	 * @param Language - language
 	 *
 	 * todo add normalization to module and constructor parameters
 	 */
-	cYandexSttSession(const std::string &HostName, std::string &Bearer, unsigned SampleRate);
+	cYandexSttSession(const std::string &HostName, std::string &Bearer, unsigned SampleRate, std::string &Language);
 
 	~cYandexSttSession() override;
 

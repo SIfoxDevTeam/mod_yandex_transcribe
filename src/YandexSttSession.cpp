@@ -18,8 +18,9 @@ void *create_yandex_stt_session(ysg_config_t *config, unsigned sample_rate, void
 		return nullptr;
 	auto token = reinterpret_cast<cYandexGrpcIamToken *>(pToken);
 	std::string host{config->sttReceiverHostName}, t_ = std::move(token->GetToken());
+    std::string language{config->preferredLanguage};
 	try {
-		auto session = new cYandexSttSession(host, t_, sample_rate);
+		auto session = new cYandexSttSession(host, t_, sample_rate, language);
 		return session;
 	} catch (std::exception &e) {
 		return nullptr;
@@ -82,7 +83,8 @@ switch_status_t feed_to_yandex_stt_session(void *session, void *data, unsigned i
 
 using namespace google::protobuf::util;
 
-cYandexSttSession::cYandexSttSession(const std::string &HostName, std::string &Bearer, unsigned SampleRate)
+cYandexSttSession::cYandexSttSession(const std::string &HostName, std::string &Bearer, unsigned SampleRate,
+                                     std::string &Language)
 	: sampleRate_(SampleRate), buf_(), maxBufLen_(SampleRate * L16PCM_SAMPLE_SIZE) {
 	auto chan_ = CreateChannel(HostName, grpc::SslCredentials(grpc::SslCredentialsOptions()));
 	stub_ = Recognizer::NewStub(chan_);
@@ -101,7 +103,7 @@ cYandexSttSession::cYandexSttSession(const std::string &HostName, std::string &B
 	req.mutable_session_options()->mutable_recognition_model()->mutable_text_normalization()
 		->set_text_normalization(TextNormalizationOptions_TextNormalization_TEXT_NORMALIZATION_ENABLED);
 	req.mutable_session_options()->mutable_recognition_model()->mutable_language_restriction()
-		->mutable_language_code()->Add("ru-RU");
+		->mutable_language_code()->Add(Language.c_str());
 	req.mutable_session_options()->mutable_recognition_model()->mutable_language_restriction()
 		->set_restriction_type(speechkit::stt::v3::LanguageRestrictionOptions_LanguageRestrictionType_WHITELIST);
 	req.mutable_session_options()->mutable_recognition_model()
