@@ -166,7 +166,7 @@ void cYandexSttSession::cYandexSttSessionReader_::operator()() {
 				std::unique_lock<std::mutex> l(self->respLock_);
 				self->alternatives_.clear();
 				for (const auto &alt: response.partial().alternatives()) {
-					if (MessageToJsonString(alt, &json_, opts) == status_internal::OkStatus())
+					if (MessageToJsonString(alt, &json_, opts).ok())
 						self->alternatives_.push_back(json_);
 				}
 				self->currentAlternativesRead_ = false;
@@ -178,7 +178,7 @@ void cYandexSttSession::cYandexSttSessionReader_::operator()() {
 				std::unique_lock<std::mutex> l(self->respLock_);
 				self->alternatives_.clear();
 				for (const auto &alt: response.final().alternatives()) {
-					if (MessageToJsonString(alt, &json_, opts) == status_internal::OkStatus())
+					if (MessageToJsonString(alt, &json_, opts).ok())
 						self->alternatives_.push_back(json_);
 				}
 				self->final_ = true;
@@ -191,7 +191,7 @@ void cYandexSttSession::cYandexSttSessionReader_::operator()() {
 				std::unique_lock<std::mutex> l(self->respLock_);
 				self->alternatives_.clear();
 				for (const auto &alt: response.final_refinement().normalized_text().alternatives()) {
-					if (MessageToJsonString(alt, &json_, opts) == status_internal::OkStatus())
+					if (MessageToJsonString(alt, &json_, opts).ok())
 						self->alternatives_.push_back(json_);
 				}
 				self->finalRefined_ = true;
